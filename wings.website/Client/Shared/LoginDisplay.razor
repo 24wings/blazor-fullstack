@@ -1,0 +1,13 @@
+﻿<AuthorizeView>
+    <Authorized>
+        你好, @context.User.Identity.Name!
+        <a href="/logout">注销</a>
+    </Authorized>
+    <NotAuthorized>
+        <a href="/register">注册</a>
+        <a href="/login">登录</a>
+    </NotAuthorized>
+</AuthorizeView>
+@code {
+
+}

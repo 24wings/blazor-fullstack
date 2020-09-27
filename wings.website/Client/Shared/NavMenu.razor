@@ -1,0 +1,102 @@
+﻿
+
+<Sider Collapsible Collapsed=@collapsed NoTrigger OnCollapse="OnCollapse">
+    <div class="logo">
+        <img src="/images/avatar.jpg" alt="Logo" />
+    </div>
+    <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline" DefaultSelectedKeys=@(new[]{"1"})>
+        @foreach (var menu in menus)
+        {
+            
+        <SubMenu Key="@(menu.id.ToString())" Title="menu.text">
+            @foreach (var subMenu in menu.childrens)
+            {
+                <MenuItem RouterLink="@(subMenu.link)">
+                    <Icon Type="user" Theme="outline" />
+                    <span>@(subMenu.text)</span>
+                </MenuItem>
+            }
+
+        </SubMenu>
+        }
+
+        <MenuItem Key="2">
+            <Icon Type="video-camera" Theme="outline" />
+            <span>nav 2</span>
+        </MenuItem>
+        <MenuItem Key="3">
+            <Icon Type="upload" Theme="outline" />
+            <span>nav 3</span>
+        </MenuItem>
+    </Menu>
+</Sider>
+
+@*<img src="/images/avatar.jpg" alt="Alternate Text" />*@
+
+<style>
+
+   
+
+    .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger {
+        min-height: 100vh;
+    }
+    .logo {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 64px;
+    }
+
+        .logo > img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+        }
+
+    #components-layout-demo-custom-trigger .logo {
+        height: 64px;
+        background: rgba(255, 255, 255, 0.2);
+    }
+</style>
+
+@code {
+    [Parameter]
+    public bool collapsed { get; set; } = false;
+
+   public class MyMenu
+    {
+        public long id { get; set; }
+        public string text { get; set; }
+
+        public string link { get; set; }
+        public List<MyMenu> childrens { get; set; }
+    }
+    public List<MyMenu> menus { get; set; } = new List<MyMenu>()
+    {
+        new MyMenu
+        {
+            id=1,
+            text="角色权限",
+            childrens=new List<MyMenu>{
+                new MyMenu{id=2,text="菜单管理",link="/rbac/menu"}
+            }
+    } };
+
+
+    void ToggleCollapsed()
+    {
+        collapsed = !collapsed;
+    }
+    void OnCollapse(bool isCollapsed)
+    {
+        Console.WriteLine($"Collapsed: {isCollapsed}");
+
+
+    }
+
+    void toggle()
+    {
+        collapsed = !collapsed;
+    }
+  
+}

@@ -1,0 +1,33 @@
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+<Router AppAssembly="@typeof(Program).Assembly">
+    <Found Context="routeData">
+        <AuthorizeRouteView RouteData="@routeData" DefaultLayout="@typeof(MainLayout)" />
+    </Found>
+    <NotFound>
+        <LayoutView Layout="@typeof(MainLayout)">
+            <p>Sorry, there's nothing at this address.</p>
+        </LayoutView>
+    </NotFound>
+</Router>
+
+<AntContainer />
+
+@code{ protected override async Task OnInitializedAsync()
+    {
+        await test();
+    }
+
+    async Task test()
+    {
+        var state = await ((ApiAuthenticationStateProvider)AuthenticationStateProvider).GetAuthenticationStateAsync();
+        if (state.User.Identity.IsAuthenticated)
+        {
+         
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+}

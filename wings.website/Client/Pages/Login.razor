@@ -1,0 +1,66 @@
+﻿@page "/login"
+@layout PassportLayout
+@inject IAuthService AuthService
+@inject NavigationManager NavigationManager
+
+
+
+@if (ShowErrors)
+{
+<div class="alert alert-danger" role="alert">
+    <p>@Error</p>
+</div>}
+
+<div class="card">
+    <div class="card-body">
+    
+
+
+        <Form Model="@loginModel"
+              LabelCol="new ColLayoutParam { Span = 8 }"
+              WrapperCol="new ColLayoutParam { Span = 16 }"
+              OnFinish="HandleLogin"
+              OnFinishFailed="OnFinishFailed">
+            <FormItem Label="用户名">
+                <Input @bind-Value="@context.Email" />
+            </FormItem>
+            <FormItem Label="密码">
+                <InputPassword @bind-Value="@context.Password" />
+            </FormItem>
+            <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
+                <Checkbox @bind-Value="context.RememberMe">记住我</Checkbox>
+            </FormItem>
+            <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
+                <Button Type="@ButtonType.Primary" HtmlType="submit">
+                    登录
+                </Button>
+            </FormItem>
+        </Form>
+    </div>
+</div>
+
+@code {
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(loginModel)}");
+    }
+    private LoginModel loginModel = new LoginModel();
+    private bool ShowErrors;
+    private string Error = "";
+
+    private async Task HandleLogin()
+    {
+        ShowErrors = false;
+
+        var result = await AuthService.Login(loginModel);
+
+        if (result.Successful)
+        {
+            NavigationManager.NavigateTo("/");
+        }
+        else
+        {
+            Error = result.Error;
+            ShowErrors = true;
+        }
+    } }

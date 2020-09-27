@@ -1,0 +1,32 @@
+﻿@page "/"
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
+<AuthorizeView>
+    <Authorized>
+        
+    </Authorized>
+    <NotAuthorized>
+        <Login></Login>
+    </NotAuthorized>
+</AuthorizeView>
+@code{
+    protected override async Task OnInitializedAsync()
+    {
+        await test();
+    }
+
+    async Task test()
+    {
+        var state = await ((ApiAuthenticationStateProvider)AuthenticationStateProvider).GetAuthenticationStateAsync();
+        if (state.User.Identity.IsAuthenticated)
+        {
+            Console.WriteLine(state.User);
+            NavigationManager.NavigateTo("/counter");
+        }
+        else
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+    }
+
+}
