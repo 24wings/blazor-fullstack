@@ -1,0 +1,216 @@
+﻿@page "/rbac/menu"
+
+@inject MenuService menuService
+
+
+<PageHeader Class="site-page-header">
+    <!--breadcrumb-->
+    <PageHeaderBreadcrumb>
+        <Breadcrumb>
+            <BreadcrumbItem>角色权限</BreadcrumbItem>
+           
+            <BreadcrumbItem>菜单管理</BreadcrumbItem>
+        </Breadcrumb>
+    </PageHeaderBreadcrumb>
+
+    <!--avatar-->
+    <!--<PageHeaderAvatar>
+        <Avatar Src="https://avatars0.githubusercontent.com/u/22736418?s=88&v=4" />
+    </PageHeaderAvatar>-->
+    <!--title-->
+    <!--<PageHeaderTitle>菜单管理</PageHeaderTitle>-->
+
+    <!--subtitle-->
+    <!--<PageHeaderSubtitle>菜单,权限</PageHeaderSubtitle>-->
+
+    <!--tags-->
+    <PageHeaderTags>
+        @*<Tag Color="blue">已认证</Tag>*@
+    </PageHeaderTags>
+
+    <!--extra-->
+    <PageHeaderExtra>
+        <Button OnClick="(() => editor.show())">新增顶级菜单</Button>
+        @if (selectedKey != 0)
+        {
+            <Button OnClick="addLevelMenu">添加同级菜单</Button>
+
+            <Button Type="@ButtonType.Primary" OnClick="getSelectedItem">添加下级菜单</Button>
+        }
+
+      
+    </PageHeaderExtra>
+
+    <!--content-->
+    <PageHeaderContent>
+        <Row>
+            <div class="pageheader-content">
+                <div>
+                    @if (nodeList!=null)
+                    {
+                        <Tree @ref="tree" OnNodeSelectedChanged="selectMenu" ShowLine="true" ShowIcon="false" IconType="carry-out" Nodes="nodeList" ></Tree>
+                    }
+
+                </div>
+                @*<div class="pageheader-content-link">
+                    <a> <img src="https://gw.alipayobjects.com/zos/rmsportal/MjEImQtenlyueSmVEfUD.svg" alt="start" />Quick Start </a>
+                    <a> <img src="https://gw.alipayobjects.com/zos/rmsportal/NbuDUAuBlIApFuDvWiND.svg" alt="info" />Product Info </a>
+                    <a> <img src="https://gw.alipayobjects.com/zos/rmsportal/ohOEPSYdDTNnyMbGuyLb.svg" alt="doc" />Product Doc </a>
+                </div>*@
+            </div>
+            <div class="pageheader-content-image">
+                @*<img src="https://gw.alipayobjects.com/zos/antfincdn/K%24NnlsB%26hz/pageHeader.svg" alt="content" />*@
+                <div>
+                    @if (rbacMenuModel != null) {
+                    <table>
+                        <tr>
+                            <td class="column-label">id</td>
+                            <td class="column-value">@(rbacMenuModel.id)</td>
+                            <td class="column-label">菜单文本</td>
+                            <td class="column-value">@(rbacMenuModel.text)</td>
+                        </tr>
+                        <tr>
+                            <td class="column-label">地址</td>
+                            <td class="column-value">@(rbacMenuModel.link)</td>
+                            <td class="column-label">图标</td>
+                            <td class="column-value">@(rbacMenuModel.icon)</td>
+                        </tr>
+                        <tr>
+                            <td class="column-label">权限代码</td>
+                            <td  class="column-value">@(rbacMenuModel.icon)</td>
+                            <td class="column-label">创建时间</td>
+                            <td  class="column-value">@(rbacMenuModel.text)</td>
+
+                        </tr>
+                     
+                    </table>
+                    }
+                </div>
+            </div>
+        </Row>
+    </PageHeaderContent>
+</PageHeader>
+
+
+
+
+<RbacMenuEditor @ref="editor" _visible="editorVisible" ></RbacMenuEditor>
+
+<style>
+    .column-label {
+        background: #e2e2e2;
+        padding: 0 15px;
+        text-align: left;
+        border: 1px solid lightblue;
+        color: lightsteelblue;
+    }
+    .column-value {
+        padding: 0 35px;
+        text-align: center;
+        border: 1px solid lightgray;
+    }
+    .pageheader-content {
+        flex: 1;
+    }
+
+        .pageheader-content p {
+            margin-bottom: 1em;
+        }
+
+    .pageheader-content-link a {
+        margin-right: 16px;
+    }
+
+    .content-link a img {
+        margin-right: 8px;
+    }
+
+    .pageheader-content-image {
+        margin: 0 0 0 60px;
+        display: flex;
+        align-items: center;
+    }
+
+        .pageheader-content-image img {
+            width: 100%;
+        }
+</style>
+
+@code{
+    bool editorVisible=false;
+    RbacMenuEditor editor;
+    Tree tree;
+
+    bool _showLine { get; set; } = true;
+    bool _showIcon { get; set; }
+
+    long selectedKey;
+    RbacMenuModel rbacMenuModel;
+
+    public List<TreeNode> nodeList { get; set; }
+
+    public TreeNode selectedTreeNode
+    {
+        get{
+            if (nodeList != null)
+            {
+                return  menuService.GetSelectedTreeNode(nodeList);
+
+            }
+            else
+            {
+                return null;
+            }
+
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        await load();
+    }
+
+
+    protected override async Task OnAfterRenderAsync(bool firstRender)
+    {
+        if (firstRender)
+        {
+        }
+    }
+
+    public  void addLevelMenu()
+    {
+        editor.showAddLevelChildren(rbacMenuModel);
+    }
+
+
+
+
+    async Task load()
+    {
+        var rtn=   await menuService.LoadMenuTreeNodes();
+        nodeList = rtn;
+
+    }
+    public async Task selectMenu(TreeEventArgs treeEventArgs)
+    {
+        selectedKey= long.Parse(treeEventArgs.Node.Key);
+        rbacMenuModel =await menuService.detailById(selectedKey);
+
+    }
+
+    void getSelectedItem()
+    {
+        var treeNode= menuService.GetSelectedTreeNode(nodeList);
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(treeNode));
+        if (treeNode != null)
+        {
+            editor.showAddChildren(new RbacMenuModel { id=long.Parse(treeNode.Key)});
+        }
+        else
+        {
+
+        }
+    }
+
+}

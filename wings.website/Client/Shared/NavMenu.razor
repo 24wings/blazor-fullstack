@@ -63,7 +63,7 @@
     [Parameter]
     public bool collapsed { get; set; } = false;
 
-   public class MyMenu
+    public class MyMenu
     {
         public long id { get; set; }
         public string text { get; set; }
@@ -80,7 +80,18 @@
             childrens=new List<MyMenu>{
                 new MyMenu{id=2,text="菜单管理",link="/rbac/menu"}
             }
-    } };
+    },
+        new MyMenu
+        {
+            id=3,
+            text="开发者管理",
+            childrens=new List<MyMenu>
+            {
+                new MyMenu{id=4,text="公司管理",link="/developer/company-manage"}
+            }
+        }
+
+    };
 
 
     void ToggleCollapsed()
@@ -98,5 +109,5 @@
     {
         collapsed = !collapsed;
     }
-  
+
 }

@@ -2,9 +2,9 @@
 using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Migrations;
 
-namespace wings.website.Server.Data.Migations
+namespace wings.website.Server.Migrations
 {
-    public partial class CreateIdentitySchema : Migration
+    public partial class init : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -45,6 +45,41 @@ namespace wings.website.Server.Data.Migations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_AspNetUsers", x => x.Id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "companys",
+                columns: table => new
+                {
+                    id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    name = table.Column<string>(nullable: true),
+                    description = table.Column<string>(nullable: true),
+                    code = table.Column<string>(nullable: false),
+                    avatarUrl = table.Column<string>(nullable: true),
+                    isActive = table.Column<bool>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_companys", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "rbacMenus",
+                columns: table => new
+                {
+                    id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    text = table.Column<string>(nullable: true),
+                    link = table.Column<string>(nullable: true),
+                    icon = table.Column<string>(nullable: true),
+                    parentId = table.Column<long>(nullable: false),
+                    createAt = table.Column<DateTime>(nullable: false),
+                    code = table.Column<string>(nullable: true)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_rbacMenus", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -207,6 +242,12 @@ namespace wings.website.Server.Data.Migations
 
             migrationBuilder.DropTable(
                 name: "AspNetUserTokens");
+
+            migrationBuilder.DropTable(
+                name: "companys");
+
+            migrationBuilder.DropTable(
+                name: "rbacMenus");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

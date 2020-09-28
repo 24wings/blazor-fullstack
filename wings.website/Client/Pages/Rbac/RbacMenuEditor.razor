@@ -1,5 +1,96 @@
-﻿<h3>RbacMenuEditor</h3>
+﻿@inject HttpClient httpClient
+
+<Modal Title="@(isUpdate?"更新菜单":"新增菜单")"
+       Visible="@_visible"
+       OnOk="@HandleOk"
+       OnCancel="@HandleCancel" >
+    <Form Model="@rbacMenuModel"
+          LabelCol="new ColLayoutParam { Span = 8 }"
+          WrapperCol="new ColLayoutParam { Span = 16 }"
+          OnFinish="OnFinish"
+          OnFinishFailed="OnFinishFailed" @ref="editForm">
+        <FormItem Label="菜单名">
+            <Input @bind-Value="@context.text" />
+        </FormItem>
+        <FormItem Label="上级Id">
+            @*<Input @bind-Value="@context.parentId" />*@
+            @(context.parentId)
+        </FormItem>
+        <FormItem Label="链接">
+            <Input @bind-Value="@context.link" />
+        </FormItem>
+        <FormItem Label="图标">
+            <Input @bind-Value="@context.icon" />
+        </FormItem>
+
+    </Form>
+</Modal>
 
 @code {
+    Form<RbacMenuModel> editForm;
+    RbacMenuModel rbacMenuModel = new RbacMenuModel();
+    bool isUpdate;
+    [Parameter]
+    public bool _visible { get; set; } = false;
 
+    private void HandleOk(MouseEventArgs e)
+    {
+        editForm.Submit();
+    }
+
+    private async Task OnFinish(EditContext editContext)
+    {
+        if (editContext.Validate())
+        {
+            await httpClient.PostJsonAsync<RbacMenuModel>("/api/RbacMenu/insert", rbacMenuModel);
+            _visible = false;
+        }
+        else
+        {
+            _visible = true;
+        }
+        StateHasChanged();
+        Console.WriteLine($"Success:{JsonSerializer.Serialize(rbacMenuModel)}");
+    }
+    private void OnFinishFailed(EditContext editContext)
+    {
+        Console.WriteLine($"Failed:{JsonSerializer.Serialize(rbacMenuModel)}");
+    }
+
+    private void HandleCancel(MouseEventArgs e)
+    {
+        Console.WriteLine(e);
+        _visible = false;
+    }
+
+    public void show()
+    {
+        rbacMenuModel = new RbacMenuModel();
+        isUpdate = false;
+        _visible = true;
+        StateHasChanged();
+    }
+    public void showAddChildren(RbacMenuModel menuModel)
+    {
+        rbacMenuModel = new RbacMenuModel { parentId = menuModel.id };
+        _visible = true;
+        isUpdate = false;
+        StateHasChanged();
+    }
+
+    public void showAddLevelChildren(RbacMenuModel menuModel)
+    {
+        rbacMenuModel = new RbacMenuModel { parentId = menuModel.parentId };
+        _visible = true;
+        isUpdate = false;
+        StateHasChanged();
+    }
+
+    public void show(RbacMenuModel menu)
+    {
+        isUpdate = true;
+        rbacMenuModel = menu;
+        _visible = true;
+        StateHasChanged();
+    }
 }
