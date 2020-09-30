@@ -39,7 +39,7 @@ namespace wings.website.Shared.Dtos
         [Required(ErrorMessage="用户名必填")]
         public string Email { get; set; }
         [Display(Name = "密码")]
-        [Required]
+        [Required( ErrorMessage = "{0} 必填")]
         public string Password { get; set; }
         [Display(Name = "记住我")]
         public bool RememberMe { get; set; }
