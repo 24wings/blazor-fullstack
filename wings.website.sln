@@ -9,6 +9,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wings.website.Client", "win
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "wings.website.Shared", "wings.website\Shared\wings.website.Shared.csproj", "{73026ADF-6548-4A54-B446-607F7B128E5F}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "aliyun-net-sdk-core.vs2017", "Libs\aliyun-openapi-net-sdk\aliyun-net-sdk-core\aliyun-net-sdk-core.vs2017.csproj", "{C0D6AE2C-62ED-4002-8C73-9BCE73C31D81}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{73026ADF-6548-4A54-B446-607F7B128E5F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{73026ADF-6548-4A54-B446-607F7B128E5F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{73026ADF-6548-4A54-B446-607F7B128E5F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C0D6AE2C-62ED-4002-8C73-9BCE73C31D81}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C0D6AE2C-62ED-4002-8C73-9BCE73C31D81}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C0D6AE2C-62ED-4002-8C73-9BCE73C31D81}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C0D6AE2C-62ED-4002-8C73-9BCE73C31D81}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

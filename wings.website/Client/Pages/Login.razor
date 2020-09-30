@@ -5,12 +5,6 @@
 
 
 
-@if (ShowErrors)
-{
-<div class="alert alert-danger" role="alert">
-    <p>@Error</p>
-</div>}
-
 
 <div class="antd-pro-layouts-user-layout-container " style="width:100%">
     <div class="antd-pro-layouts-user-layout-lang"></div>
@@ -27,7 +21,18 @@
         </div>
 
         <div class="antd-pro-pages-user-login-style-main">
+
+       
+
+            @switch (status)
+            {
+                case PageStatus.Login:
             <div class="antd-pro-pages-user-login-components-login-index-login">
+                @if (ShowErrors)
+                {
+            <div class="alert alert-danger" role="alert">
+                <p>@Error</p>
+            </div>}
                 <Form Model="@loginModel"
                       LabelCol="new ColLayoutParam { Span = 8 }"
                       WrapperCol="new ColLayoutParam { Span = 16 }"
@@ -42,26 +47,69 @@
                     <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
                         <div style="display:flex;justify-content:space-between">
                             <Checkbox @bind-Value="context.RememberMe">自动登录</Checkbox>
-                            <NavLink href="/register">
-                                <Button Type="link">
-                                    注册
-                                </Button>
-                            </NavLink>
+
+                            <Button Type="link" OnClick="()=>status=PageStatus.Register">
+                                注册
+                            </Button>
                         </div>
                     </FormItem>
                     <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
-                            <Button Block Type="@ButtonType.Primary" HtmlType="submit">
-                                登录
-                            </Button>
-                            
+                        <Button Block Type="@ButtonType.Primary" HtmlType="submit">
+                            登录
+                        </Button>
+
                     </FormItem>
                     <div>
-                        
+
                     </div>
                 </Form>
 
 
-            </div>
+            </div> break;
+    case PageStatus.Register:
+        <div class="antd-pro-pages-user-login-components-login-index-login">
+            <Form Model="@registerModel"
+                  LabelCol="new ColLayoutParam { Span = 8 }"
+                  WrapperCol="new ColLayoutParam { Span = 16 }"
+                  OnFinish="HandleRegistration"
+                  OnFinishFailed="OnFinishFailed">
+                <FormItem Label="手机号">
+                    <Input @bind-Value="@context.Email" />
+                </FormItem>
+                <FormItem Label="密码">
+                    <InputPassword @bind-Value="@context.Password" />
+                </FormItem>
+
+                <FormItem Label="确认密码">
+                    <InputPassword @bind-Value="@context.ConfirmPassword" />
+                </FormItem>
+                <FormItem Label="短信">
+
+                    <Input @bind-Value="@context.Code" Style="width: 160px" />
+                    <Tooltip Title=@("点击发送短信")>
+                        <a Style="margin: 0 8px" }>
+                            发送短信
+                        </a>
+                    </Tooltip>
+                </FormItem>
+                <FormItem WrapperCol="new ColLayoutParam{ Offset = 8, Span = 16 }">
+                    <div style="display:flex;justify-content:space-between">
+                        <Button Type="@ButtonType.Primary" HtmlType="submit">
+                            注册
+                        </Button>
+
+                        <Button type="link" OnClick="(()=>status=PageStatus.Login)">使用已有账号登录</Button>
+                    </div>
+                </FormItem>
+                <div>
+
+                </div>
+            </Form>
+
+
+        </div>              break;
+}
+
         </div>
     </div>
     <footer class="ant-layout-footer" style="padding: 0px;">
@@ -84,7 +132,17 @@
 </div>
 
 
-@code { private void OnFinishFailed(EditContext editContext)
+@code {
+    
+    enum PageStatus
+    {
+        Login,
+        Register,
+        Password
+    }
+    PageStatus status = PageStatus.Login;
+
+    private void OnFinishFailed(EditContext editContext)
     {
         Console.WriteLine($"Failed:{JsonSerializer.Serialize(loginModel)}");
     }
@@ -107,4 +165,26 @@
             Error = result.Error;
             ShowErrors = true;
         }
-    } }
+    }
+    private RegisterModel registerModel = new RegisterModel();
+    private bool ShowRegisterErrors;
+    private IEnumerable<string>
+    Errors;
+
+    private async Task HandleRegistration()
+    {
+        ShowRegisterErrors = false;
+
+        var result = await AuthService.Register(registerModel);
+
+        if (result.Successful)
+        {
+            NavigationManager.NavigateTo("/login");
+        }
+        else
+        {
+            Errors = result.Errors;
+            ShowErrors = true;
+        }
+    }
+}

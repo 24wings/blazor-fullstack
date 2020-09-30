@@ -89,6 +89,15 @@
             {
                 new MyMenu{id=4,text="公司管理",link="/developer/company-manage"}
             }
+        },
+          new MyMenu
+        {
+            id=4,
+            text="个人中心",
+            childrens=new List<MyMenu>
+            {
+                new MyMenu{id=4,text="个人设置",link="/person-center/user-setting"}
+            }
         }
 
     };

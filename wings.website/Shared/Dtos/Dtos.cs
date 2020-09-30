@@ -24,8 +24,14 @@ namespace wings.website.Shared.Dtos
 
         [DataType(DataType.Password)]
         [Display(Name = "确认密码")]
-        //[Compare("确认密码", ErrorMessage = "两次输入的密码不一致")]
+        [Compare("Password", ErrorMessage = "两次输入的密码不一致")]
         public string ConfirmPassword { get; set; }
+        /// <summary>
+        /// 验证码
+        /// </summary>
+        [Required]
+        [Display( Name = "验证码")]
+        public string Code { get; set; }
     }
     public class LoginResult
     {
