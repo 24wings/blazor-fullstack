@@ -8,8 +8,11 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.IdentityModel.Tokens;
+using Newtonsoft.Json.Converters;
 using System.Linq;
 using System.Text;
+using System.Text.Json.Serialization;
+using wings.website.Server.Models.Rbac;
 
 namespace wings.website.Server
 {
@@ -28,10 +31,16 @@ namespace wings.website.Server
         {
 
             services.AddControllersWithViews();
+                
+            //    .AddJsonOptions(opts =>
+            //{
+            //    opts.JsonSerializerOptions.Converters.Add(new JsonStringEnumConverter());
+
+            //});
             services.AddRazorPages();
             services.AddDbContext<ApplicationDbContext>(options =>
                options.UseMySql(Configuration.GetConnectionString("Connection")));
-            services.AddDefaultIdentity<IdentityUser>()
+            services.AddIdentity<RbacUser,IdentityRole>()
               .AddEntityFrameworkStores<ApplicationDbContext>();
             services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
                 .AddJwtBearer(options =>
@@ -68,6 +77,7 @@ namespace wings.website.Server
             app.UseRouting();
             app.UseAuthentication();
             app.UseAuthorization();
+
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapRazorPages();

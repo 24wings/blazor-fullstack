@@ -1,0 +1,157 @@
+﻿@page "/developer/company/{id:long}"
+
+@inject CompanyService companyService
+
+<PageHeader Class="site-page-header">
+    <!--breadcrumb-->
+    <PageHeaderBreadcrumb>
+        <Breadcrumb>
+            <BreadcrumbItem>公司管理</BreadcrumbItem>
+            @if (company != null)
+            {
+                <BreadcrumbItem>公司:@(company.name)</BreadcrumbItem>
+            }
+
+        </Breadcrumb>
+    </PageHeaderBreadcrumb>
+    <PageHeaderTags>
+        @if (company != null)
+        {
+            @switch (company.status)
+            {
+                case CompanyStatus.Submit:
+                    <Tag Color="blue">已提交</Tag>
+                    break;
+                case CompanyStatus.Approve:
+                    <Tag Color="blue">已认证</Tag>
+                    break;
+                default:
+                    <Tag Color="blue">已禁用</Tag>
+                    break;
+            }
+            <Tag>代码:@(company.code)</Tag>
+
+        }
+
+    </PageHeaderTags>
+
+    <!--extra-->
+    <PageHeaderExtra>
+
+        <Button>禁用</Button>
+
+    </PageHeaderExtra>
+    <PageHeaderContent>
+
+        @if (company != null)
+        {
+            @*<table>
+                <tr>
+                    <td class="column-label">id</td>
+                    <td class="column-value">@(company.id)</td>
+                    <td class="column-label">名称</td>
+                    <td class="column-value">@(company.name)</td>
+                </tr>
+                <tr>
+                    <td class="column-label">代码</td>
+                    <td class="column-value">@(company.code)</td>
+                    <td class="column-label">描述</td>
+                    <td class="column-value">@(company.description)</td>
+                </tr>
+                <tr>
+                    <td class="column-label">状态</td>
+                    <td class="column-value">@(company.status)</td>
+                    <td class="column-label">创建时间</td>
+                    <td class="column-value">@(company.createAt)</td>
+
+                </tr>
+
+            </table>*@
+
+            <Card Title=@("公司详情")>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="false">
+                    id
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="true">
+                    @company.id
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="false">
+                    公司名称
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="true">
+                    @company.name
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="false">
+                    公司代码
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="true">
+                    @company.code
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="false">
+                    公司描述
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="true">
+                    @company.description
+                </CardGrid>
+
+                <CardGrid Style="width:25%;text-align:center" Hoverable="false">
+                    审核状态
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="true">
+                    @company.status
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="false">
+                    创建时间
+                </CardGrid>
+                <CardGrid Style="width:25%;text-align:center" Hoverable="true">
+                    @company.createAt
+                </CardGrid>
+
+            </Card>
+        }
+
+
+    <Tabs DefaultActiveKey="1" @bind-ActiveKey="@activePane">
+        <TabPane Key="1">
+            <Tab>公司菜单</Tab>
+            <ChildContent>
+                <wings.website.Client.Pages.Developer.CompanyMenuPages.CompanyMenuList></wings.website.Client.Pages.Developer.CompanyMenuPages.CompanyMenuList>
+
+            </ChildContent>
+        </TabPane>
+
+        <TabPane Key="2">
+            <Tab>公司角色</Tab>
+            <ChildContent>
+
+                <wings.website.Client.Pages.Developer.CompanyRolePages.CompanyRoleList></wings.website.Client.Pages.Developer.CompanyRolePages.CompanyRoleList>
+            </ChildContent>
+        </TabPane>
+
+
+    </Tabs>
+
+    </PageHeaderContent>
+</PageHeader>
+
+@code {
+    string activePane = "1";
+    [Parameter]
+    public long id { get; set; }
+
+    public Company company;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await refresh();
+  
+    }
+
+    public async Task refresh()
+    {
+        var rtn = await companyService.detailById(id);
+        company = rtn;
+    }
+
+   
+}

@@ -17,24 +17,25 @@
 <div class="card">
     <div class="card-body">
         <h5 class="card-title">Please enter your details</h5>
-        <EditForm Model="RegisterModel" OnValidSubmit="HandleRegistration">
+        <EditForm Model="registerModel" OnValidSubmit="HandleRegistration">
             <DataAnnotationsValidator />
             <ValidationSummary />
 
             <div class="form-group">
                 <label for="email">Email address</label>
-                <InputText Id="email" class="form-control" @bind-Value="RegisterModel.Email" />
-                <ValidationMessage For="@(() => RegisterModel.Email)" />
+                <InputText Id="email" class="form-control" @bind-Value="registerModel.Email" />
+
+                <ValidationMessage For="@(() => registerModel.Email)" />
             </div>
             <div class="form-group">
                 <label for="password">Password</label>
-                <InputText Id="password" type="password" class="form-control" @bind-Value="RegisterModel.Password" />
-                <ValidationMessage For="@(() => RegisterModel.Password)" />
+                <InputText Id="password" type="password" class="form-control" @bind-Value="registerModel.Password" />
+                <ValidationMessage For="@(() => registerModel.Password)" />
             </div>
             <div class="form-group">
                 <label for="confirmpassword">Confirm Password</label>
-                <InputText Id="confirmpassword" type="password" class="form-control" @bind-Value="RegisterModel.ConfirmPassword" />
-                <ValidationMessage For="@(() => RegisterModel.ConfirmPassword)" />
+                <Input Placeholder="Basic usage"  @bind-Value="registerModel.ConfirmPassword" />
+                <ValidationMessage For="@(() => registerModel.ConfirmPassword)" />
             </div>
             <button type="submit" class="btn btn-primary">Submit</button>
         </EditForm>
@@ -43,7 +44,7 @@
 
 @code {
 
-    private RegisterModel RegisterModel = new RegisterModel();
+    private RegisterModel registerModel = new RegisterModel();
     private bool ShowErrors;
     private IEnumerable<string>
     Errors;
@@ -52,7 +53,7 @@
     {
         ShowErrors = false;
 
-        var result = await AuthService.Register(RegisterModel);
+        var result = await AuthService.Register(registerModel);
 
         if (result.Successful)
         {

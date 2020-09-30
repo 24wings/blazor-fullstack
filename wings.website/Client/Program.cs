@@ -25,6 +25,8 @@ namespace wings.website.Client
             builder.Services.AddAuthorizationCore();
             builder.Services.AddScoped<AuthenticationStateProvider, ApiAuthenticationStateProvider>();
             builder.Services.AddScoped<IAuthService, AuthService>();
+            builder.Services.AddScoped<ConfigService>();
+            builder.Services.AddScoped<CompanyService>();
             builder.Services.AddScoped<MenuService>();
             builder.Services.AddAntDesign();
             
@@ -32,3 +34,4 @@ namespace wings.website.Client
         }
     }
 }
+

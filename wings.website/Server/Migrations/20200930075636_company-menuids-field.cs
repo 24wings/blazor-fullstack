@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 namespace wings.website.Server.Migrations
 {
-    public partial class init : Migration
+    public partial class companymenuidsfield : Migration
     {
         protected override void Up(MigrationBuilder migrationBuilder)
         {
@@ -40,7 +40,10 @@ namespace wings.website.Server.Migrations
                     TwoFactorEnabled = table.Column<bool>(nullable: false),
                     LockoutEnd = table.Column<DateTimeOffset>(nullable: true),
                     LockoutEnabled = table.Column<bool>(nullable: false),
-                    AccessFailedCount = table.Column<int>(nullable: false)
+                    AccessFailedCount = table.Column<int>(nullable: false),
+                    nickname = table.Column<string>(nullable: true),
+                    companyId = table.Column<long>(nullable: false),
+                    roleId = table.Column<long>(nullable: false)
                 },
                 constraints: table =>
                 {
@@ -57,7 +60,9 @@ namespace wings.website.Server.Migrations
                     description = table.Column<string>(nullable: true),
                     code = table.Column<string>(nullable: false),
                     avatarUrl = table.Column<string>(nullable: true),
-                    isActive = table.Column<bool>(nullable: false)
+                    status = table.Column<int>(nullable: false),
+                    createAt = table.Column<DateTime>(nullable: false),
+                    menuIds = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
                 {
@@ -80,6 +85,23 @@ namespace wings.website.Server.Migrations
                 constraints: table =>
                 {
                     table.PrimaryKey("PK_rbacMenus", x => x.id);
+                });
+
+            migrationBuilder.CreateTable(
+                name: "rbacRoles",
+                columns: table => new
+                {
+                    id = table.Column<long>(nullable: false)
+                        .Annotation("MySql:ValueGenerationStrategy", MySqlValueGenerationStrategy.IdentityColumn),
+                    menuIds = table.Column<string>(nullable: true),
+                    name = table.Column<string>(nullable: true),
+                    code = table.Column<string>(nullable: true),
+                    createAt = table.Column<DateTime>(nullable: false),
+                    companyId = table.Column<long>(nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_rbacRoles", x => x.id);
                 });
 
             migrationBuilder.CreateTable(
@@ -128,8 +150,8 @@ namespace wings.website.Server.Migrations
                 name: "AspNetUserLogins",
                 columns: table => new
                 {
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    ProviderKey = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    ProviderKey = table.Column<string>(nullable: false),
                     ProviderDisplayName = table.Column<string>(nullable: true),
                     UserId = table.Column<string>(nullable: false)
                 },
@@ -173,8 +195,8 @@ namespace wings.website.Server.Migrations
                 columns: table => new
                 {
                     UserId = table.Column<string>(nullable: false),
-                    LoginProvider = table.Column<string>(maxLength: 128, nullable: false),
-                    Name = table.Column<string>(maxLength: 128, nullable: false),
+                    LoginProvider = table.Column<string>(nullable: false),
+                    Name = table.Column<string>(nullable: false),
                     Value = table.Column<string>(nullable: true)
                 },
                 constraints: table =>
@@ -248,6 +270,9 @@ namespace wings.website.Server.Migrations
 
             migrationBuilder.DropTable(
                 name: "rbacMenus");
+
+            migrationBuilder.DropTable(
+                name: "rbacRoles");
 
             migrationBuilder.DropTable(
                 name: "AspNetRoles");

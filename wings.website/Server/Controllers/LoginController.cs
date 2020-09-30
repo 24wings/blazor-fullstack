@@ -9,8 +9,10 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
+using wings.website.Server.Models.Rbac;
 using wings.website.Shared.Dtos;
 
 namespace wings.website.Server.Controllers
@@ -21,13 +23,15 @@ namespace wings.website.Server.Controllers
     public class LoginController : ControllerBase
     {
         private readonly IConfiguration _configuration;
-        private readonly SignInManager<IdentityUser> _signInManager;
+        private readonly SignInManager<RbacUser> _signInManager;
+        private readonly ApplicationDbContext applicationDbContext;
 
         public LoginController(IConfiguration configuration,
-            SignInManager<IdentityUser> signInManager)
+            SignInManager<RbacUser> signInManager,ApplicationDbContext _applicationDbContext)
         {
             _configuration = configuration;
             _signInManager = signInManager;
+            applicationDbContext = _applicationDbContext;
         }
 
         [HttpPost]
@@ -37,9 +41,11 @@ namespace wings.website.Server.Controllers
 
             if (!result.Succeeded) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
 
+           var user= await applicationDbContext.Users.FirstOrDefaultAsync(user => user.Email == login.Email||user.UserName==login.Email);
             var claims = new[]
             {
-                new Claim(ClaimTypes.Name, login.Email)
+                new Claim(ClaimTypes.Name, login.Email),
+                new Claim(ClaimTypes.GroupSid, user.companyId.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));

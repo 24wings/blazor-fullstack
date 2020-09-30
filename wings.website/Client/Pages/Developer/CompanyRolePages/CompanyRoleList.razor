@@ -1,0 +1,50 @@
+﻿@inject CompanyService companyService
+
+<Table @ref="table"
+       DataSource="@dataList"
+       OnPageIndexChange="async e=>await refresh()">
+    <Selection Key="@(context.id.ToString())" />
+    <Column @bind-Field="@context.id" Sortable />
+    <Column @bind-Field="@context.name">
+        <NavLink href="@("/developer/company/"+context.id)">
+            <Button Type="link">@context.name</Button>
+        </NavLink>
+    </Column>
+
+    <Column @bind-Field="@context.code" Sortable />
+    <Column @bind-Field="@context.createAt" Format="yyyy-MM-dd" Sortable />
+
+
+    
+    @*<Column @bind-Field="@context.Summary" Sortable />*@
+    <ActionColumn Title="操作">
+        <Space>
+            <SpaceItem><Button Type="link" OnClick="()=>Delete(context.id)">禁用</Button></SpaceItem>
+            <SpaceItem><Button Type="link" OnClick="()=>Delete(context.id)">审核通过</Button></SpaceItem>
+
+            <SpaceItem><Button Type="link" Danger OnClick="()=>Delete(context.id)">删除</Button></SpaceItem>
+
+        </Space>
+    </ActionColumn>
+</Table>
+@code {
+    List<RbacRole> dataList;
+    public Table<RbacRole> table;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await refresh();
+    }
+    public async Task refresh()
+    {
+
+        var rtn = await companyService.loadCompanyDetail();
+        dataList = rtn;
+    }
+    public async Task Delete(long id)
+    {
+
+    }
+
+
+}

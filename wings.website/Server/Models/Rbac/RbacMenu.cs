@@ -19,6 +19,7 @@ namespace wings.website.Server.Models.Rbac
         public DateTime createAt { get; set; } = DateTime.Now;
 
         public string code { get; set; }
+        
 
     }
 }

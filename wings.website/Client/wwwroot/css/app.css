@@ -178,3 +178,18 @@ app {
 .ant-layout-content {
     padding: 20px;
 }
+
+
+.column-label {
+    background: #e2e2e2;
+    padding: 0 15px;
+    text-align: left;
+    border: 1px solid lightblue;
+    color: lightsteelblue;
+}
+
+.column-value {
+    padding: 0 35px;
+    text-align: center;
+    border: 1px solid lightgray;
+}

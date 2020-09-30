@@ -52,6 +52,26 @@ namespace wings.website.Client.Services
             Console.WriteLine(JsonConvert.SerializeObject(topMenus));
             return topMenus;
         }
+        public async Task<List<TreeNode>> LoadCurrentCompanyMenuTreeNodes()
+        {
+            var rtn = await httpClient.GetJsonAsync<List<RbacMenuModel>>(configuration.GetConnectionString("url") + "/api/developer/company/companyMenu");
+            rtn = rtn.Where(item => item != null).ToList();
+            var topMenus = rtn.Where(item => item.parentId == 0).Select(item =>
+            {
+                var children = getMenuChild(item.id, rtn);
+                var treeNode = new TreeNode
+                {
+                    Key = item.id.ToString(),
+                    Text = item.text,
+                    IsExpanded = true,
+                    Nodes = { }
+                };
+                children.ForEach(child => treeNode.Nodes.Add(child));
+                return treeNode;
+
+            }).ToList();
+            return topMenus;
+        }
 
         public List<TreeNode> getMenuChild(long key, List<RbacMenuModel> menus)
         {

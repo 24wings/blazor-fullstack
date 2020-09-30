@@ -6,6 +6,7 @@ using System.Threading.Tasks;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using wings.website.Server.Models.Rbac;
 using wings.website.Shared.Dtos;
 
 namespace wings.website.Server.Controllers
@@ -17,9 +18,9 @@ namespace wings.website.Server.Controllers
     {
         //private static UserModel LoggedOutUser = new UserModel { IsAuthenticated = false };
 
-        private readonly UserManager<IdentityUser> _userManager;
+        private readonly UserManager<RbacUser> _userManager;
 
-        public AccountsController(UserManager<IdentityUser> userManager)
+        public AccountsController(UserManager<RbacUser> userManager)
         {
             _userManager = userManager;
         }
@@ -27,7 +28,7 @@ namespace wings.website.Server.Controllers
         [HttpPost]
         public async Task<IActionResult> Post([FromBody] RegisterModel model)
         {
-            var newUser = new IdentityUser { UserName = model.Email, Email = model.Email };
+            var newUser = new RbacUser { UserName = model.Email, Email = model.Email };
 
             var result = await _userManager.CreateAsync(newUser, model.Password);
 

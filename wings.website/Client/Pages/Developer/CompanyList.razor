@@ -1,0 +1,158 @@
+﻿@page "/developer/company-manage"
+@using System.ComponentModel
+@using AntDesign.TableModels
+
+@inject CompanyService companyService
+
+<PageHeader Class="site-page-header">
+    <!--breadcrumb-->
+    <PageHeaderBreadcrumb>
+        <Breadcrumb>
+            <BreadcrumbItem>角色权限</BreadcrumbItem>
+
+            <BreadcrumbItem>菜单管理</BreadcrumbItem>
+        </Breadcrumb>
+    </PageHeaderBreadcrumb>
+
+    <!--avatar-->
+    <!--<PageHeaderAvatar>
+        <Avatar Src="https://avatars0.githubusercontent.com/u/22736418?s=88&v=4" />
+    </PageHeaderAvatar>-->
+    <!--title-->
+    <!--<PageHeaderTitle>菜单管理</PageHeaderTitle>-->
+    <!--subtitle-->
+    <!--<PageHeaderSubtitle>菜单,权限</PageHeaderSubtitle>-->
+    <!--tags-->
+    <PageHeaderTags>
+        <Tag Color="blue">已认证</Tag>
+    </PageHeaderTags>
+
+    <!--extra-->
+    <PageHeaderExtra>
+
+        <Button OnClick="showAddNewCompanyEditor">新增公司</Button>
+
+    </PageHeaderExtra>
+
+    <!--content-->
+    <PageHeaderContent>
+        <Table @ref="table"
+               DataSource="@dataList"
+               Total="(int)total"
+               OnChange="@((QueryModel<Company> _)=> onChange(_))"
+               @bind-PageIndex="_pageIndex"
+               @bind-PageSize="_pageSize"
+               OnPageIndexChange="async e=>await refresh()"
+               @bind-SelectedRows="selectedRows">
+            <Selection Key="@(context.id.ToString())" />
+            <Column @bind-Field="@context.id" Sortable />
+            <Column @bind-Field="@context.name">
+                <NavLink href="@("/developer/company/"+context.id)">
+                    <Button Type="link">@context.name</Button>
+                </NavLink>
+            </Column>
+
+            <Column @bind-Field="@context.code" Sortable />
+            <Column @bind-Field="@context.createAt" Format="yyyy-MM-dd" Sortable />
+
+
+            <Column Title="审核状态" Field="@context.status">
+                @switch (context.status)
+                {
+                    case CompanyStatus.Submit:
+                        <p>已提交</p>
+                        break;
+                    case CompanyStatus.Approve:
+                        <p>已同意</p>
+                        break;
+                    default:
+                        <p>已禁用</p>
+                        break;
+                }
+            </Column>
+            @*<Column @bind-Field="@context.Summary" Sortable />*@
+            <ActionColumn Title="操作">
+                <Space>
+                    <SpaceItem><Button Type="link" OnClick="()=>Delete(context.id)">禁用</Button></SpaceItem>
+                    <SpaceItem><Button Type="link" OnClick="()=>Delete(context.id)">审核通过</Button></SpaceItem>
+
+                    <SpaceItem><Button Type="link" Danger OnClick="()=>Delete(context.id)">删除</Button></SpaceItem>
+
+                </Space>
+            </ActionColumn>
+        </Table>
+
+        @*<br />*@
+        <p>@*PageIndex: @_pageIndex | PageSize: @_pageSize | Total: @_total*@</p>
+
+        @*<br />*@
+        @*<h5>selections:</h5>*@
+        @*@if (selectedRows != null && selectedRows.Any())
+            {
+                <Button Danger Size="small" OnClick="@(e => { selectedRows = null; })">Clear</Button>
+
+                @foreach (var selected in selectedRows)
+                {
+                    <Tag @key="selected.Id" Closable OnClose="e=>RemoveSelection(selected.Id)">@selected.Id - @selected.Summary</Tag>
+                }
+                            }*@
+    </PageHeaderContent>
+</PageHeader>
+
+<CompanyEditor @ref="companyEditor" onSave="refresh"></CompanyEditor>
+
+
+@code {
+    Table<Company> table;
+    List<Company> dataList;
+    long total = 10;
+    CompanyEditor companyEditor;
+
+    void showAddNewCompanyEditor()
+    {
+        companyEditor.show();
+    }
+
+    IEnumerable<Company> selectedRows;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await refresh();
+    }
+
+
+
+    void onChange(QueryModel<Company> queryModel)
+    {
+        Console.WriteLine(queryModel);
+    }
+
+
+
+
+
+
+    public async Task refresh()
+    {
+        var rtn = await companyService.load(new CompanyQuery { pageIndex = 0, pageSize = 10 });
+        dataList = rtn.data;
+        total = rtn.total;
+    }
+
+    public void RemoveSelection(int id)
+    {
+        var selected = selectedRows.Where(x => x.id != id);
+        selectedRows = selected;
+
+        //table.SetSelection(selected.Select(x => x.Id.ToString()).ToArray());
+    }
+
+    private void Delete(long id)
+    {
+
+    }
+}
