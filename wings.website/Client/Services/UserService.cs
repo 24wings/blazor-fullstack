@@ -4,6 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net.Http;
 using System.Threading.Tasks;
+using wings.website.Shared.Models.Common;
 using wings.website.Shared.Models.Rbac;
 
 namespace wings.website.Client.Services
@@ -18,6 +19,11 @@ namespace wings.website.Client.Services
         {
                 var rtn = await httpClient.GetJsonAsync<RbacUserModel>(configService.url + "/api/rbac/user/currentUser");
                 return rtn;
+        }
+        public async Task<Res> updateUser(RbacUserModel rbacUserModel)
+        {
+            var rtn = await httpClient.PostJsonAsync<Res>(configService.url + "/api/rbac/user/updateUser",rbacUserModel);
+            return rtn;
         }
     }
 }

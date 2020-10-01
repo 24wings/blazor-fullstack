@@ -29,6 +29,8 @@ namespace wings.website.Client
             builder.Services.AddScoped<CompanyService>();
             builder.Services.AddScoped<MenuService>();
             builder.Services.AddScoped<UserService>();
+            builder.Services.AddScoped<ResourceService>();
+            
             builder.Services.AddAntDesign();
             
             await builder.Build().RunAsync();
