@@ -1,4 +1,6 @@
 ﻿@page "/person-center/user-setting"
+
+@inject UserService userService
     <Card >
    
         
@@ -13,7 +15,7 @@
                             <div class="antd-pro-pages-account-settings-components-base-view-baseView">
 
                                 <div class="antd-pro-pages-account-settings-components-base-view-left">
-                                    <Form Model="@userSettingModel"
+                                    <Form Model="@userModel"
                                           LabelCol="new ColLayoutParam { Span = 8 }"
                                           WrapperCol="new ColLayoutParam { Span = 16 }"
                                           OnFinish="OnFinish"
@@ -28,7 +30,7 @@
                                             <Input @bind-Value="@context.nickname" />
                                         </FormItem>
                                         <FormItem Label="个人简介">
-                                            <Input @bind-Value="@context.sign" />
+                                            <Input @bind-Value="@context.Sign" />
                                         </FormItem>
 
                                     </Form>
@@ -51,9 +53,15 @@
     </Card>
  
     @code {
-    
-        UserSettingModel userSettingModel=new UserSettingModel { Email= "antdesign@alipay.com",nickname= "Serati Ma" };
-        Form<UserSettingModel> editForm;
+
+        RbacUserModel userModel = new RbacUserModel();
+        Form<RbacUserModel> editForm;
+
+        protected override async Task OnParametersSetAsync()
+        {
+            await refresh();
+        }
+
 
         public async Task OnFinish()
         {
@@ -62,6 +70,11 @@
         public async Task OnFinishFailed()
         {
 
+        }
+
+        public async Task refresh()
+        {
+            userModel = await userService.currentUser();
         }
 
     }

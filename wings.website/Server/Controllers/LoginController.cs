@@ -39,13 +39,11 @@ namespace wings.website.Server.Controllers
         {
             var result = await _signInManager.PasswordSignInAsync(login.Email, login.Password, false, false);
 
-            if (!result.Succeeded) return BadRequest(new LoginResult { Successful = false, Error = "Username and password are invalid." });
+            if (!result.Succeeded) return BadRequest(new LoginResult { Successful = false, Error = "用户名或密码错误" });
 
-           var user= await applicationDbContext.Users.FirstOrDefaultAsync(user => user.Email == login.Email||user.UserName==login.Email);
             var claims = new[]
             {
                 new Claim(ClaimTypes.Name, login.Email),
-                new Claim(ClaimTypes.GroupSid, user.companyId.ToString()),
             };
 
             var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["JwtSecurityKey"]));

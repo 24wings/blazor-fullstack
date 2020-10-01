@@ -1,13 +1,13 @@
-﻿using Microsoft.AspNetCore.Identity;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
+using System.Text;
 
-namespace wings.website.Server.Models.Rbac
+namespace wings.website.Shared.Models.Rbac
 {
-    public class RbacUser:IdentityUser
+    public class RbacUserModel
     {
+        public string Email { get; set; }
+
         public string nickname { get; set; }
 
         public long companyId { get; set; }
