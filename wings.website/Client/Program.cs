@@ -10,6 +10,7 @@ using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Components.Authorization;
 using Blazored.LocalStorage;
 using wings.website.Client.Services;
+using Tewr.Blazor.FileReader;
 
 namespace wings.website.Client
 {
@@ -30,7 +31,8 @@ namespace wings.website.Client
             builder.Services.AddScoped<MenuService>();
             builder.Services.AddScoped<UserService>();
             builder.Services.AddScoped<ResourceService>();
-            
+            builder.Services.AddFileReaderService();
+
             builder.Services.AddAntDesign();
             
             await builder.Build().RunAsync();

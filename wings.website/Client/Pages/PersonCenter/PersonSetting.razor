@@ -3,7 +3,9 @@
 @inject UserService userService
 @inject ResourceService resourceService
 @inject MessageService _message
-
+@using Tewr.Blazor.FileReader
+@using System.IO;
+@inject IFileReaderService fileReaderService;
 <Card>
 
 
@@ -53,14 +55,14 @@
                                         }
                                     </div>
 
+
                                 </Form>
                             </div>
                             <div class="antd-pro-pages-account-settings-components-base-view-right"><div class="antd-pro-pages-account-settings-components-base-view-avatar_title">头像</div><div class="antd-pro-pages-account-settings-components-base-view-avatar"><img src="https://gw.alipayobjects.com/zos/antfincdn/XAosXuNZyF/BiazfanxmamNRoxxVxka.png" alt="avatar"></div><span class=""><div class="ant-upload ant-upload-select ant-upload-select-text"><span tabindex="0" class="ant-upload" role="button"><input type="file" accept="" style="display: none;"><div class="antd-pro-pages-account-settings-components-base-view-button_view"><button type="button" class="ant-btn"><span role="img" aria-label="upload" class="anticon anticon-upload"><svg viewBox="64 64 896 896" focusable="false" class="" data-icon="upload" width="1em" height="1em" fill="currentColor" aria-hidden="true"><path d="M400 317.7h73.9V656c0 4.4 3.6 8 8 8h60c4.4 0 8-3.6 8-8V317.7H624c6.7 0 10.4-7.7 6.3-12.9L518.3 163a8 8 0 00-12.6 0l-112 141.7c-4.1 5.3-.4 13 6.3 13zM878 626h-60c-4.4 0-8 3.6-8 8v154H214V634c0-4.4-3.6-8-8-8h-60c-4.4 0-8 3.6-8 8v198c0 17.7 14.3 32 32 32h684c17.7 0 32-14.3 32-32V634c0-4.4-3.6-8-8-8z"></path></svg></span>更换头像</button></div></span></div></span></div>
                         </div>
                         <Button style="width:150px;margin-top:50px" OnClick="OnFinish" Type="primary">更新基本信息</Button>
                     </div>
-
-                    @(Newtonsoft.Json.JsonConvert.SerializeObject(userModel))
+                    <input type="file" @ref=inputTypeFileElement /><button @onclick=ReadFile>Read file</button>
                 </ChildContent>
             </TabPane>
             <TabPane Key="2">
@@ -76,7 +78,35 @@
 </Card>
 
 @code {
+    private ElementReference inputTypeFileElement;
 
+    public async Task ReadFile()
+    {
+        foreach (var file in await fileReaderService.CreateReference(inputTypeFileElement).EnumerateFilesAsync())
+        {
+            var fileInfo= await file.ReadFileInfoAsync();
+            var buffer = new Byte[fileInfo.Size];
+            // Read into buffer and act (uses less memory)
+            await using (Stream stream = await file.OpenReadAsync())
+            {
+                // Do (async) stuff with stream...
+                await stream.ReadAsync(buffer,0,(int)fileInfo.Size);
+                string a = Convert.ToBase64String(buffer);
+                Console.WriteLine(a);
+
+                // The following will fail. Only async read is allowed.
+                //stream.Read(buffer, ...)
+            }
+
+            // Read file fully into memory and act
+            //using (MemoryStream memoryStream = await file.CreateMemoryStreamAsync(4096))
+            //{
+
+            //    // Sync calls are ok once file is in memory
+            //    //memoryStream.Read(buffer, ...)
+            //}
+        }
+    }
     RbacUserModel userModel = new RbacUserModel();
     Form<RbacUserModel> editForm;
     List<wings.website.Shared.Models.Common.ProvinceJson> provinceJsons;
@@ -131,7 +161,7 @@
     public async Task refresh()
     {
         userModel = await userService.currentUser();
-        if (! string.IsNullOrEmpty(userModel.Province))
+        if (!string.IsNullOrEmpty(userModel.Province))
         {
             var province = provinceJsons.FirstOrDefault(p => p.name == userModel.Province);
             userModel.Province = province.name;
