@@ -8,6 +8,7 @@ using System.Linq;
 using System.Net.Http;
 using System.Text.Json;
 using System.Threading.Tasks;
+using wings.website.Shared.Dtos;
 using wings.website.Shared.Models;
 
 namespace wings.website.Client.Services
@@ -30,6 +31,28 @@ namespace wings.website.Client.Services
             return rtn;
         }
 
+        public async Task<List<MyMenu>> loadMyMenusAsync()
+        {
+            var rtn = await load();
+        var myMenus  = rtn.Where(item => item != null).Select(m=>new MyMenu { id=m.id,text=m.text,icon=m.icon,link=m.link,parentId=m.parentId}).ToList();
+            var topMenus = myMenus.Where(item => item.parentId == 0).Select(item =>
+            {
+                var children = getChildrenMyMenu(item.id, myMenus);
+                var treeNode = new MyMenu
+                {
+                    id = item.id,
+                    text = item.text,
+                    link = item.link,
+                    icon = item.icon,
+                    childrens=new List<MyMenu> { }
+                };
+                children.ForEach(child => treeNode.childrens.Add(child));
+                return treeNode;
+
+            }).ToList();
+            return topMenus;
+        }
+    
         public async Task<List<TreeNode>> LoadMenuTreeNodes()
         {
             var rtn = await httpClient.GetJsonAsync<List<RbacMenuModel>>(configuration.GetConnectionString("url") + "/api/RbacMenu/load");
@@ -48,8 +71,6 @@ namespace wings.website.Client.Services
                 return treeNode;
 
             }).ToList();
-            //topMenus.ForEach(topMenu =>getMenuChild(int.Parse(topMenu.Key), rtn).ForEach(child =>topMenu.Nodes.Add(child)));
-            Console.WriteLine(JsonConvert.SerializeObject(topMenus));
             return topMenus;
         }
         public async Task<List<TreeNode>> LoadCurrentCompanyMenuTreeNodes()
@@ -99,6 +120,31 @@ namespace wings.website.Client.Services
 
         }
 
+        public List<MyMenu> getChildrenMyMenu(long key,List<MyMenu> menus)
+        {
+            List<MyMenu> result = new List<MyMenu>();
+            var children = menus.Where(m => m.parentId== key).Select(m => new RbacMenuModel { id = m.id, icon = m.icon, text = m.text, link = m.link, parentId = m.parentId }).ToList();
+
+            foreach (var child in children)
+            {
+                if (child != null)
+                {
+                    var newTreeNode = new MyMenu
+                    {
+                        id = child.id,
+                        text = child.text,
+                        link = child.link,
+                        parentId=child.parentId,
+                        icon=child.icon
+                    };
+                    result.Add(newTreeNode);
+                }
+            }
+
+            result = result.Where(r => r != null).ToList();
+            return result;
+        }
+
         public TreeNode GetSelectedTreeNode(List<TreeNode> treeNodes)
         {
             var selectedTreeNode = new getSelected((treeNodes) =>
@@ -131,8 +177,8 @@ namespace wings.website.Client.Services
     }
     
     public delegate TreeNode getSelected(List<TreeNode> nodes);
-        
-        
+    public delegate MyMenu getMyMenuTree(List<MyMenu> nodes);
 
-   
+
+
 }
