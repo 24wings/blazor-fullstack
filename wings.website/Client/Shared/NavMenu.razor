@@ -1,4 +1,4 @@
-﻿
+﻿@inject MenuService menuService
 
 <Sider Collapsible Collapsed=@collapsed NoTrigger OnCollapse="OnCollapse">
     <div class="logo">
@@ -20,14 +20,7 @@
         </SubMenu>
         }
 
-        <MenuItem Key="2">
-            <Icon Type="video-camera" Theme="outline" />
-            <span>nav 2</span>
-        </MenuItem>
-        <MenuItem Key="3">
-            <Icon Type="upload" Theme="outline" />
-            <span>nav 3</span>
-        </MenuItem>
+       
     </Menu>
 </Sider>
 
@@ -63,14 +56,17 @@
     [Parameter]
     public bool collapsed { get; set; } = false;
 
-    public class MyMenu
+    protected override async Task OnParametersSetAsync()
     {
-        public long id { get; set; }
-        public string text { get; set; }
-
-        public string link { get; set; }
-        public List<MyMenu> childrens { get; set; }
+        await refresh();
     }
+    public async Task refresh()
+    {
+        var myMenus=  await  menuService.loadMyMenusAsync();
+        menus = myMenus;
+
+    }
+
     public List<MyMenu> menus { get; set; } = new List<MyMenu>()
     {
         new MyMenu
@@ -79,8 +75,7 @@
             text="角色权限",
             childrens=new List<MyMenu>{
                 new MyMenu{id=2,text="菜单管理",link="/rbac/menu"}
-            }
-    },
+            }    },
         new MyMenu
         {
             id=3,

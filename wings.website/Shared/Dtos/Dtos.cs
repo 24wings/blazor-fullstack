@@ -5,6 +5,19 @@ using System.Text;
 
 namespace wings.website.Shared.Dtos
 {
+
+
+    public class MyMenu
+    {
+        public long id { get; set; }
+        public string text { get; set; }
+
+        public string link { get; set; }
+        public List<MyMenu> childrens { get; set; }
+        public long parentId { get; set; }
+
+        public string icon { get; set; }
+    }
     public class RegisterResult
     {
         public bool Successful { get; set; }

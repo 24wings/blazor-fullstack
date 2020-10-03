@@ -25,6 +25,13 @@ namespace wings.website.Client.Services
             return rtn;
         }
 
+        public async Task<List<RbacMenuModel>> loadCurrentUserMenus()
+        {
+            var rtn = await httpClient.GetJsonAsync<List<RbacMenuModel>>(configuration.GetConnectionString("url") + "/api/rbac/user/userMenus");
+            return rtn;
+        }
+
+
         public async Task<RbacMenuModel> detailById(long id)
         {
             var rtn = await httpClient.GetJsonAsync<RbacMenuModel>(configuration.GetConnectionString("url") + "/api/RbacMenu/detail?id="+id);
@@ -33,7 +40,7 @@ namespace wings.website.Client.Services
 
         public async Task<List<MyMenu>> loadMyMenusAsync()
         {
-            var rtn = await load();
+            var rtn = await loadCurrentUserMenus();
         var myMenus  = rtn.Where(item => item != null).Select(m=>new MyMenu { id=m.id,text=m.text,icon=m.icon,link=m.link,parentId=m.parentId}).ToList();
             var topMenus = myMenus.Where(item => item.parentId == 0).Select(item =>
             {
