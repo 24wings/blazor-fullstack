@@ -7,6 +7,7 @@ using System.Linq;
 using System.Threading.Tasks;
 using wings.website.Server.Models.Rbac;
 using wings.website.Shared.Models;
+using wings.website.Shared.Models.Developer;
 using wings.website.Shared.Models.Rbac;
 
 namespace wings.website.Server
@@ -26,6 +27,7 @@ namespace wings.website.Server
              new RbacMenu{id=302,parentId=300,code="person-setting",text="个人设置",icon="cloud",link="/person-center/user-setting"},
              new RbacMenu{id=400,parentId=0,code="developer",text="开发者",icon="cloud"},
              new RbacMenu{id=401,parentId=300,code="company-manage",text="公司管理",icon="cloud",link="/developer/company-manage"},
+                       new RbacMenu{id=402,parentId=300,code="developer-codegen",text="开发者代码生成",icon="cloud",link="/developer/codegen"}
 
          };
         public static readonly List<RbacMenu> dingdingMenus =
@@ -58,12 +60,12 @@ namespace wings.website.Server
 
 
             // 创建开发者公司
-            await context.companys.AddAsync(new Shared.Models.Company { id = 1, name = "开发者公司", status = CompanyStatus.Approve, code = "developer", description = "负责开发,运维不同公司的业务系统", menuIds = string.Join(",", allMenus.Select(m => m.id)) });
+            await context.companys.AddAsync(new Company { id = 1, name = "开发者公司", status = CompanyStatus.Approve, code = "developer", description = "负责开发,运维不同公司的业务系统", menuIds = string.Join(",", allMenus.Select(m => m.id)) });
             await context.rbacRoles.AddAsync(new RbacRole { id = 1, name = "开发者",companyId=1, menuIds =string.Join(",",allMenus.Select(m => m.id)) });
             await context.rbacMenus.AddRangeAsync(allMenus);
 
             // 创建丁丁公司
-            await context.companys.AddAsync(new Shared.Models.Company { id = 2, name = "钉钉公司", status = CompanyStatus.Approve, code = "dingding", description = "钉钉群扫描", menuIds = string.Join(",", dingdingMenus.Select(m => m.id)) });
+            await context.companys.AddAsync(new Company { id = 2, name = "钉钉公司", status = CompanyStatus.Approve, code = "dingding", description = "钉钉群扫描", menuIds = string.Join(",", dingdingMenus.Select(m => m.id)) });
             await context.rbacRoles.AddAsync(new RbacRole { id = 200, name = "钉钉管理员", companyId = 2, menuIds = string.Join(",", dingdingMenus.Select(m => m.id)) });
 
             if (!await context.Users.AnyAsync())

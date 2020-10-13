@@ -22,7 +22,7 @@ namespace wings.website.Server
                 try
                 {
                     // 初始化默认的开发者资源
-                    await SeedData.InitializeDefaultDeveloperResource(services);
+                    //await SeedData.InitializeDefaultDeveloperResource(services);
                     //await SeedData.InitializeDeveloperCompany(services);
                 }
                 catch (Exception ex)

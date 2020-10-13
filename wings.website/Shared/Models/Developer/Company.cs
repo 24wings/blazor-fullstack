@@ -6,9 +6,12 @@ using System.ComponentModel;
 using System.ComponentModel.DataAnnotations;
 using System.Text;
 using System.Text.Json.Serialization;
+using wings.website.Shared.Attributes;
 
-namespace wings.website.Shared.Models
+namespace wings.website.Shared.Models.Developer
 {
+
+    [DataGrid(Title ="公司管理")]
    public class Company
     {
         [Key]

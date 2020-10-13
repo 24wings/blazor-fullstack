@@ -1,0 +1,6 @@
+C:\Users\21217\Documents\Projects\blazor-fullstack\wings.Ui.Core\bin\Debug\wings.Ui.Core.dll
+C:\Users\21217\Documents\Projects\blazor-fullstack\wings.Ui.Core\bin\Debug\wings.Ui.Core.pdb
+C:\Users\21217\Documents\Projects\blazor-fullstack\wings.Ui.Core\obj\Debug\wings.Ui.Core.csprojAssemblyReference.cache
+C:\Users\21217\Documents\Projects\blazor-fullstack\wings.Ui.Core\obj\Debug\wings.Ui.Core.csproj.CoreCompileInputs.cache
+C:\Users\21217\Documents\Projects\blazor-fullstack\wings.Ui.Core\obj\Debug\wings.Ui.Core.dll
+C:\Users\21217\Documents\Projects\blazor-fullstack\wings.Ui.Core\obj\Debug\wings.Ui.Core.pdb

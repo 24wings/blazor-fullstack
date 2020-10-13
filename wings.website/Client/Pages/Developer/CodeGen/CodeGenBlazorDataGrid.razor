@@ -1,0 +1,163 @@
+﻿code gen
+@(type.Name)
+<pre>
+
+@using System.ComponentModel
+@using AntDesign.TableModels
+
+@inject CompanyService companyService
+
+@("<")PageHeader Class="site-page-header">
+    
+@("<")PageHeaderBreadcrumb>
+@("<")Breadcrumb>
+@("<")BreadcrumbItem>@dataGrid?.Title@("<")/BreadcrumbItem>
+
+
+    @("<")/PageHeaderBreadcrumb>
+
+@("<")PageHeaderTags>
+@("<")Tag Color="blue">已认证@("<")/Tag>
+    @("<")/PageHeaderTags>
+
+@("<")PageHeaderExtra>
+
+@("<")Button OnClick="showAddNewCompanyEditor">新增@("<")/Button>
+
+    @("<")/PageHeaderExtra>
+
+
+@("<")PageHeaderContent>
+@("<")Table @@ref="table"
+       DataSource="@@dataList"
+       Total="(int)total"
+       OnChange="@("(QueryModel<Company> _)=> onChange(_)")"
+       @@bind-PageIndex="_pageIndex"
+       @@bind-PageSize="_pageSize"
+       OnPageIndexChange="async e=>await refresh()"
+       @@bind-SelectedRows="selectedRows">
+@("<")Selection Key="@("context.id.ToString()")" />
+
+
+
+@("<")Column @@bind-Field="@("@")context.id" Sortable />
+
+@("<")Column @@bind-Field="@("@")context.name">
+@("<")NavLink href="@@("/developer/company/"+context.id)">
+@("<")Button Type="link">@("@")context.name@("<")/Button>
+                @("<")/NavLink>
+            @("<")/Column>
+
+@("<")Column @@bind-Field="@("@")context.code" Sortable />
+
+
+
+@("<")Column @@bind-Field="@("@")context.createAt" Format="yyyy-MM-dd" Sortable />
+
+
+
+@("<")Column Title="审核状态" Field="@("@")context.status">
+                @@switch (context.status)
+                {
+                    case CompanyStatus.Submit:
+@("<")p>已提交@("<")/p>
+                        break;
+                    case CompanyStatus.Approve:
+@("<")p>已同意@("<")/p>
+                        break;
+                    default:
+@("<")p>已禁用@("<")/p>
+                        break;
+                }
+            @("<")/Column>
+          
+@("<")ActionColumn Title="操作">
+@("<")Space>
+@("<")SpaceItem>@("<")Button Type="link" OnClick="()=>Delete(context.id)">禁用@("<")/Button>@("<")/SpaceItem>
+@("<")SpaceItem>@("<")Button Type="link" OnClick="()=>Delete(context.id)">审核通过@("<")/Button>@("<")/SpaceItem>
+
+@("<")SpaceItem>@("<")Button Type="link" Danger OnClick="()=>Delete(context.id)">删除@("<")/Button>@("<")/SpaceItem>
+
+                @("<")/Space>
+            @("<")/ActionColumn>
+        @("<")/Table>
+
+
+    @("<")/PageHeaderContent>
+@("<")/PageHeader>
+
+@("<")CompanyEditor @@ref="companyEditor" onSave="refresh">@("<")/CompanyEditor>
+</pre>
+<pre>
+@("@")code {
+    Table@("<")@(type.Name)> table;
+    List@("<")@type.Name> dataList;
+    long total = 10;
+    CompanyEditor companyEditor;
+
+    void showAddNewCompanyEditor()
+    {
+        companyEditor.show();
+    }
+
+    IEnumerable@("<")Company> selectedRows;
+
+    int _pageIndex = 1;
+    int _pageSize = 10;
+    int _total = 0;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        await refresh();
+    }
+
+
+
+    void onChange(QueryModel@("<")@(type.Name)> queryModel)
+    {
+        Console.WriteLine(queryModel);
+    }
+
+
+
+
+
+
+    public async Task refresh()
+    {
+        var rtn = await companyService.load(new CompanyQuery { pageIndex = 0, pageSize = 10 });
+        dataList = rtn.data;
+        total = rtn.total;
+    }
+
+    public void RemoveSelection(int id)
+    {
+        var selected = selectedRows.Where(x => x.id != id);
+        selectedRows = selected;
+
+        //table.SetSelection(selected.Select(x => x.Id.ToString()).ToArray());
+    }
+
+    private void Delete(long id)
+    {
+
+    }
+
+}
+
+}
+</pre>
+@code {
+    [Parameter]
+    public Type type { get; set; }
+
+
+    public DataGridAttribute dataGrid
+    {
+        get
+        {
+            var dataGrid= (DataGridAttribute)type.GetCustomAttributes(true).Where(t=>t.GetType()== typeof(DataGridAttribute)).FirstOrDefault();
+            return dataGrid;
+        }
+    }
+}

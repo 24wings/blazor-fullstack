@@ -1,5 +1,6 @@
 ﻿@inject MenuService menuService
-
+@inject AuthenticationStateProvider AuthenticationStateProvider
+@inject NavigationManager NavigationManager
 <Sider Collapsible Collapsed=@collapsed NoTrigger OnCollapse="OnCollapse">
     <div class="logo">
         <img src="/images/avatar.jpg" alt="Logo" />
@@ -7,32 +8,31 @@
     <Menu Theme="MenuTheme.Dark" Mode="MenuMode.Inline" DefaultSelectedKeys=@(new[]{"1"})>
         @foreach (var menu in menus)
         {
-            
-        <SubMenu Key="@(menu.id.ToString())" Title="menu.text">
-            @foreach (var subMenu in menu.childrens)
-            {
-                <MenuItem RouterLink="@(subMenu.link)">
-                    <Icon Type="user" Theme="outline" />
-                    <span>@(subMenu.text)</span>
-                </MenuItem>
-            }
 
-        </SubMenu>
+            <SubMenu Key="@(menu.id.ToString())" Title="menu.text">
+                @foreach (var subMenu in menu.childrens)
+                {
+                    <MenuItem RouterLink="@(subMenu.link)">
+                        <Icon Type="user" Theme="outline" />
+                        <span>@(subMenu.text)</span>
+                    </MenuItem>
+                }
+
+            </SubMenu>
         }
 
-       
+
     </Menu>
 </Sider>
 
-@*<img src="/images/avatar.jpg" alt="Alternate Text" />*@
-
 <style>
 
-   
+
 
     .ant-layout-sider.ant-layout-sider-dark.ant-layout-sider-has-trigger {
         min-height: 100vh;
     }
+
     .logo {
         display: flex;
         justify-content: center;
@@ -56,46 +56,31 @@
     [Parameter]
     public bool collapsed { get; set; } = false;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnAfterRenderAsync(bool firstRender)
     {
-        await refresh();
+        if (firstRender)
+        {
+            await refresh();
+        }
+
+
     }
     public async Task refresh()
     {
-        var myMenus=  await  menuService.loadMyMenusAsync();
-        menus = myMenus;
+        var state = await ((ApiAuthenticationStateProvider)AuthenticationStateProvider).GetAuthenticationStateAsync();
+        if (state.User.Identity.IsAuthenticated)
+        {
+            var myMenus = await menuService.loadMyMenusAsync();
+            menus = myMenus;
+            StateHasChanged();
+        }
+
+
 
     }
 
-    public List<MyMenu> menus { get; set; } = new List<MyMenu>()
-    {
-        new MyMenu
-        {
-            id=1,
-            text="角色权限",
-            childrens=new List<MyMenu>{
-                new MyMenu{id=2,text="菜单管理",link="/rbac/menu"}
-            }    },
-        new MyMenu
-        {
-            id=3,
-            text="开发者管理",
-            childrens=new List<MyMenu>
-            {
-                new MyMenu{id=4,text="公司管理",link="/developer/company-manage"}
-            }
-        },
-          new MyMenu
-        {
-            id=4,
-            text="个人中心",
-            childrens=new List<MyMenu>
-            {
-                new MyMenu{id=4,text="个人设置",link="/person-center/user-setting"}
-            }
-        }
+    public List<MyMenu> menus { get; set; } = new List<MyMenu>();
 
-    };
 
 
     void ToggleCollapsed()

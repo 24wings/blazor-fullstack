@@ -1,0 +1,67 @@
+﻿@page "/developer/codegen"
+@*<CodeGenBlazorDataGrid type="typeof(Company)"></CodeGenBlazorDataGrid>*@
+
+
+<Markdown Content="@("Hello")"></Markdown>
+
+@foreach (var group in groups)
+{
+    <Tag Mode="checkable" CheckedChange="(()=>CheckChange(group))">@group.Key</Tag>
+}
+
+
+@if (selectedGroup != null)
+{
+
+    <Tabs DefaultActiveKey="0" @bind-ActiveKey="@nKey">
+        @foreach (var type in selectedGroup)
+        {
+            <TabPane Key="@selectedGroup.ToList().IndexOf(type).ToString()">
+                <Tab>@type.Name</Tab>
+                <ChildContent>
+                    @if (type.GetCustomAttribute<WidgetAttribute>() != null)
+                    {
+                        @switch (type.GetCustomAttribute<WidgetAttribute>().widhetType)
+                        {
+                            case WidhetType.DataGrid:
+                                <CodeGenBlazorDataGrid type="type.AsType()"></CodeGenBlazorDataGrid>
+                                break;
+                            case WidhetType.EditorPage:
+                                <h1>editor</h1>
+                                <wings.website.Client.Pages.Developer.CodeGen.EditorPageTemplate></wings.website.Client.Pages.Developer.CodeGen.EditorPageTemplate>
+                                break;
+                            default:
+                                <h1>hello</h1>
+                                break;
+                        }
+
+                    }
+
+                </ChildContent>
+            </TabPane>
+
+        }
+    </Tabs>
+
+
+
+}
+
+@code{
+    List<IGrouping<string, TypeInfo>> groups { get; set; }
+    IGrouping<string, TypeInfo> selectedGroup;
+    string nKey { get; set; } = "0";
+
+    protected override async Task OnParametersSetAsync()
+    {
+        groups = System.Reflection.Assembly.GetAssembly(typeof(DataGridAttribute)).DefinedTypes.Where(t => t.GetCustomAttributes(true).Where(t => t.GetType().IsSubclassOf(typeof(WidgetAttribute))).Count() > 0).GroupBy(p => p.Namespace).ToList();
+        Console.WriteLine(Newtonsoft.Json.JsonConvert.SerializeObject(groups));
+
+    }
+    public void CheckChange(IGrouping<string, TypeInfo> group)
+    {
+        selectedGroup = group;
+        StateHasChanged();
+
+    }
+}
